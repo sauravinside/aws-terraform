@@ -1,0 +1,5 @@
+access_key = ""
+secret_key = ""
+public_key_path = ""
+certificate_arn = "arn:aws:acm:us-west-2:"
+route53_hosted_zone_name = "shubhamdomain.tk"
