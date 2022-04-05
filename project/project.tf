@@ -211,3 +211,59 @@ resource "aws_dynamodb_table" "basic-dynamodb-table" {
     Environment = "production"
   }
 }
+
+resource "aws_route53_zone" "hosted_zone" {
+  name = "awssession.ml"
+force_destroy="true"  
+
+}
+
+# resource "aws_route53_record" "blog-ns" {
+#   zone_id = aws_route53_zone.main.zone_id
+#   name    = "blog.awssession.ml"
+#   type    = "NS"
+#   ttl     = "30"
+#   records = aws_route53_zone.dev.name_servers
+# }
+
+resource "aws_lb" "alb" {
+  name               = "project-ALB"
+  internal           = false
+  load_balancer_type = "application"
+  security_groups    = [aws_security_group.security_group.id]
+  subnets            = [aws_subnet.public_subnet.id, aws_subnet.private_subnet.id]
+  
+  tags = {
+    Environment = "project-ALB"
+  }
+}
+
+resource "aws_lb_target_group" "target" {
+  name     = "target-project"
+  port     = 80
+  protocol = "HTTP"
+  vpc_id   = aws_vpc.main.id
+}
+
+resource "aws_lb_target_group_attachment" "attach" {
+  target_group_arn = aws_lb_target_group.target.arn
+  target_id        = aws_instance.db.id
+  port             = 80
+}
+
+resource "aws_lb_listener" "listner" {
+  load_balancer_arn = aws_lb.alb.arn
+  port              = "443"
+  protocol          = "HTTPS"
+  ssl_policy        = "ELBSecurityPolicy-2016-08"
+  certificate_arn   = "arn:aws:acm:us-west-2:124058707612:certificate/078fb849-dd7f-4c15-9f3a-76b7ced7b5a6"
+
+  default_action {
+    type             = "forward"
+    target_group_arn = aws_lb_target_group.target.arn
+  }
+}
+
+output "name_servers" {
+  value = aws_route53_zone.hosted_zone.name_servers
+}
