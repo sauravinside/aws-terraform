@@ -213,7 +213,7 @@ resource "aws_dynamodb_table" "basic-dynamodb-table" {
 }
 
 resource "aws_route53_zone" "hosted_zone" {
-  name = "awssession.ml"
+  name = "shubhamdomain.tk"
 force_destroy="true"  
 
 }
