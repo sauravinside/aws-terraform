@@ -13,7 +13,7 @@ resource "aws_subnet" "public_subnet" {
   availability_zone = "us-west-2a"
   map_public_ip_on_launch = "1"
   tags = {
-    Name = "public_tf_subnet"
+    Name = "public_tf_subnet-new"
   }
 }
 
